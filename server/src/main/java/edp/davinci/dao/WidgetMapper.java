@@ -106,4 +106,16 @@ public interface WidgetMapper {
     List<Widget> getWidgetsByView(@Param("viewId") Long viewId);
 
     int updateConfigBatch(@Param("list") List<Widget> list);
+
+    @Select({"select DISTINCT w.*" +
+            " from widget w, rel_role_user rru" +
+            " WHERE NOT exists(select 1 from rel_role_widget rrw WHERE rrw.widget_id = w.id AND rrw.role_id = rru.role_id AND rrw.visible = 0)" +
+            " and rru.user_id = #{userId} AND w.id = #{Id}"})
+    Widget getByIdAndUserId(@Param("Id") Long Id,@Param("userId") Long userId);
+
+    @Select({"SELECT max(rw.visible) permission" +
+            " from rel_role_user ru" +
+            " INNER JOIN rel_role_widget rw ON rw.role_id = ru.role_id" +
+            " and ru.user_id = #{userId} AND rw.widget_id = #{Id}"})
+    Short getPermissionByIdAndUserId(@Param("Id") Long Id,@Param("userId") Long userId);
 }

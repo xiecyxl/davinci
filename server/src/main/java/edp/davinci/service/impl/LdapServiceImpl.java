@@ -21,13 +21,8 @@ package edp.davinci.service.impl;
 
 import edp.core.exception.ServerException;
 import edp.davinci.core.enums.UserOrgRoleEnum;
-import edp.davinci.dao.OrganizationMapper;
-import edp.davinci.dao.RelUserOrganizationMapper;
-import edp.davinci.dao.UserMapper;
-import edp.davinci.model.LdapPerson;
-import edp.davinci.model.Organization;
-import edp.davinci.model.RelUserOrganization;
-import edp.davinci.model.User;
+import edp.davinci.dao.*;
+import edp.davinci.model.*;
 import edp.davinci.service.LdapService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -62,6 +57,13 @@ public class LdapServiceImpl implements LdapService {
     @Value("${spring.ldap.urls:''}")
     private String ldapUrls;
 
+//    默认组织
+    @Value("${default.Organization}")
+    private String defaultOrganizationName;
+//  默认角色
+    @Value("${default.role}")
+    private String defaultRole;
+
     @Autowired
     private UserMapper userMapper;
 
@@ -70,6 +72,12 @@ public class LdapServiceImpl implements LdapService {
 
     @Autowired
     private RelUserOrganizationMapper relUserOrganizationMapper;
+
+    @Autowired
+    private RelRoleUserMapper relRoleUserMapper;
+
+    @Autowired
+    private RoleMapper roleMapper;
 
     public boolean existLdapServer() {
         return !StringUtils.isEmpty(ldapUrls);
@@ -131,14 +139,30 @@ public class LdapServiceImpl implements LdapService {
             log.error("Ldap regist fail, email({})", user.getEmail());
             throw new ServerException("Ldap regist fail");
         }
-        
-        String orgName = user.getUsername() + "'s Organization";
-        Organization organization = new Organization(orgName, null, user.getId());
-        if (organizationMapper.insert(organization) > 0) {
-            RelUserOrganization relUserOrganization = new RelUserOrganization(organization.getId(), user.getId(), UserOrgRoleEnum.OWNER.getRole());
-            relUserOrganization.createdBy(user.getId());
-            relUserOrganizationMapper.insert(relUserOrganization);
+
+//        LDAP首次登录，设置默认组织和角色
+        Long orgId = organizationMapper.getIdByName(defaultOrganizationName);
+        if (null == orgId){
+            log.error("Default organization({}) not exists", defaultOrganizationName);
+            throw new ServerException("Ldap regist fail");
         }
+        Organization organization = organizationMapper.getById(orgId);
+        RelUserOrganization relUserOrganization = new RelUserOrganization(organization.getId(), user.getId(), UserOrgRoleEnum.MEMBER.getRole());
+        relUserOrganization.createdBy(user.getId());
+        relUserOrganizationMapper.insert(relUserOrganization);
+        Role role = roleMapper.getByName(defaultRole);
+        RelRoleUser roleUser = new RelRoleUser(user.getId(),role.getId());
+
+        relRoleUserMapper.insert(roleUser);
+
+
+//        String orgName = user.getUsername() + "'s Organization";
+//        Organization organization = new Organization(orgName, null, user.getId());
+//        if (organizationMapper.insert(organization) > 0) {
+//            RelUserOrganization relUserOrganization = new RelUserOrganization(organization.getId(), user.getId(), UserOrgRoleEnum.OWNER.getRole());
+//            relUserOrganization.createdBy(user.getId());
+//            relUserOrganizationMapper.insert(relUserOrganization);
+//        }
 
         return user;
     }

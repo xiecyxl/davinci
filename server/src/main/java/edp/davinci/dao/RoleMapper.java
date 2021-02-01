@@ -41,6 +41,10 @@ public interface RoleMapper {
     })
     Role getById(Long id);
 
+    @Select({
+            "select * from `role` where name = #{name,jdbcType=VARCHAR}"
+    })
+    Role getByName(String name);
 
     @Select({
             "SELECT a.* " +

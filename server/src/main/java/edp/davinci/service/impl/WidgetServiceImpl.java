@@ -188,6 +188,10 @@ public class WidgetServiceImpl extends BaseEntityService implements WidgetServic
         if (projectPermission.getWidgetPermission() < UserPermissionEnum.READ.getPermission()) {
             throw new UnAuthorizedException(ErrorMsg.ERR_MSG_PERMISSION);
         }
+//        判断是否有可读权限
+        if(getWidgetPermission(id,user)<UserPermissionEnum.READ.getPermission()){
+            throw new UnAuthorizedException(ErrorMsg.ERR_MSG_PERMISSION);
+        }
 
         return widget;
     }
@@ -259,6 +263,11 @@ public class WidgetServiceImpl extends BaseEntityService implements WidgetServic
         Long projectId = widget.getProjectId();
         checkWritePermission(entity, projectId, user, "update");
 
+//        判断是否有编辑权限
+        if(getWidgetPermission(id,user)<UserPermissionEnum.WRITE.getPermission()){
+            throw new UnAuthorizedException(ErrorMsg.ERR_MSG_PERMISSION);
+        }
+
         String name = widgetUpdate.getName();
         if (isExist(name, id, projectId)) {
             alertNameTaken(entity, name);
@@ -313,6 +322,11 @@ public class WidgetServiceImpl extends BaseEntityService implements WidgetServic
         Widget widget = getWidget(id);
 
         checkDeletePermission(entity, widget.getProjectId(), user);
+
+//        判断是否有编辑权限
+        if(getWidgetPermission(id,user)<UserPermissionEnum.DELETE.getPermission()){
+            throw new UnAuthorizedException(ErrorMsg.ERR_MSG_PERMISSION);
+        }
 
         memDashboardWidgetMapper.deleteByWidget(id);
         memDisplaySlideWidgetMapper.deleteByWidget(id);
@@ -567,5 +581,27 @@ public class WidgetServiceImpl extends BaseEntityService implements WidgetServic
         querySqlList.forEach(s -> res.append(s).append(NEW_LINE_CHAR));
 
         return res.toString();
+    }
+
+    /**
+     * 获取用户对组件的权限
+     * @param id 组件ID
+     * @param user 用户
+     * @return
+     */
+    private Short getWidgetPermission(Long id, User user){
+        Widget widget = widgetMapper.getById(id);
+        if (null == widget) {
+            log.info("Widget({}) not found", id);
+            throw new NotFoundException("Widget is not found");
+        }
+        if (widget.getCreateBy().equals(user.getId())){
+            return UserPermissionEnum.DELETE.getPermission();
+        }
+        Short premission = widgetMapper.getPermissionByIdAndUserId(id,user.getId());
+        if (null==premission){
+            return UserPermissionEnum.HIDDEN.getPermission();
+        }
+        return premission;
     }
 }
