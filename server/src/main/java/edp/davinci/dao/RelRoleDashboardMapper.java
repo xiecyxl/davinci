@@ -34,12 +34,22 @@ public interface RelRoleDashboardMapper {
 
     int insertBatch(List<RelRoleDashboard> list);
 
+//    @Select({
+//            "select rru.role_id as roleId, rrd.dashboard_id as vizId",
+//            "from rel_role_dashboard rrd",
+//            "   inner join rel_role_user rru on rru.role_id = rrd.role_id",
+//            "   inner join dashboard d on d.id  = rrd.dashboard_id",
+//            "where rru.user_id = #{userId} and rrd.visible = 0 and d.dashboard_portal_id = #{portalId}"
+//    })
+//    List<RoleDisableViz> getDisableByUser(@Param("userId") Long userId, @Param("portalId") Long portalId);
+
+    //    17231
     @Select({
-            "select rru.role_id as roleId, rrd.dashboard_id as vizId",
-            "from rel_role_dashboard rrd",
-            "   inner join rel_role_user rru on rru.role_id = rrd.role_id",
-            "   inner join dashboard d on d.id  = rrd.dashboard_id",
-            "where rru.user_id = #{userId} and rrd.visible = 0 and d.dashboard_portal_id = #{portalId}"
+            " select ru.role_id roleId,d.id vizId" +
+            " from dashboard d" +
+            " INNER JOIN rel_role_user ru ON ru.user_id = #{userId} AND d.dashboard_portal_id = #{portalId}" +
+            " left join rel_role_dashboard rd ON ru.role_id = rd.role_id AND rd.dashboard_id = d.id AND rd.visible =1" +
+            " WHERE rd.role_id IS NULL "
     })
     List<RoleDisableViz> getDisableByUser(@Param("userId") Long userId, @Param("portalId") Long portalId);
 
@@ -54,12 +64,14 @@ public interface RelRoleDashboardMapper {
     })
     int deleteByDashboardId(Long id);
 
+//    17231
     @Select({
-            "select rrd.dashboard_id",
-            "from rel_role_dashboard rrd",
-            "inner join dashboard d on d.id = rrd.dashboard_id",
-            "INNER JOIN dashboard_portal p on p.id = d.dashboard_portal_id",
-            "where rrd.role_id = #{id} and rrd.visible = 0 and p.project_id = #{projectId}"
+            "select d.id dashboard_id",
+            "from dashboard d",
+            "INNER JOIN dashboard_portal dp on dp.id = d.dashboard_portal_id",
+            "left join rel_role_dashboard rd on d.id = rd.dashboard_id and rd.role_id = #{id}  and rd.visible = 1",
+            "where dp.project_id = #{projectId}",
+            "AND rd.role_id IS NULL"
     })
     List<Long> getExcludeDashboards(@Param("id") Long id, @Param("projectId") Long projectId);
 

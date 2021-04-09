@@ -38,25 +38,24 @@ public interface RelRoleDisplayMapper {
     })
     int deleteByDisplayId(Long id);
 
+//  17231
     @Select({
-            "select rru.role_id as roleId, rrd.display_id as vizId",
-            "from rel_role_display rrd",
-            "       inner join rel_role_user rru on rru.role_id = rrd.role_id",
-            "       inner join display d on d.id = rrd.display_id",
-            "where rru.user_id = #{userId} and rrd.visible = 0 and d.project_id = #{projectId}"
+            "select ru.role_id roleId,d.id vizId",
+            "from display d",
+            "INNER JOIN rel_role_user ru ON ru.user_id = #{userId} AND d.project_id = #{projectId}",
+            "left join rel_role_display rd ON ru.role_id = rd.role_id AND rd.display_id = d.id AND rd.visible =1",
+            "WHERE rd.role_id IS NULL "
     })
     List<RoleDisableViz> getDisableDisplayByUser(@Param("userId") Long userId, @Param("projectId") Long projectId);
-
     @Select({
             "select role_id from rel_role_display where display_id = #{display_id} and visible = 0"
     })
     List<Long> getById(Long displayId);
-
+//17231
     @Select({
-            "select rrd.display_id",
-            "from rel_role_display rrd",
-            "inner join display d on d.id = rrd.display_id",
-            "where rrd.role_id = #{id} and rrd.visible = 0 and d.project_id = #{projectId}"
+            "select d.id display_id",
+            "from display d",
+            "LEFT JOIN rel_role_display rd on d.id = rd.display_id AND rd.role_id = #{id} AND d.project_id = #{projectId}"
     })
     List<Long> getExcludeDisplays(@Param("id") Long id, @Param("projectId") Long projectId);
 

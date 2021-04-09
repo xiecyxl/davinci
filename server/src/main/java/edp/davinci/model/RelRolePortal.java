@@ -28,7 +28,8 @@ public class RelRolePortal extends RecordInfo<RelRolePortal> {
 
     private Long portalId;
 
-    private Boolean visible = false; // 可见/不可见  true/false
+//    17231
+    private Boolean visible = true; // 可见/不可见  true/false
 
     public RelRolePortal(Long portalId, Long roleId) {
         this.roleId = roleId;

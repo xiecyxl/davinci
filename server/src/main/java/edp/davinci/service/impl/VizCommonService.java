@@ -83,6 +83,10 @@ public class VizCommonService extends BaseEntityService {
         return projectPermission == null || (!projectPermission.isProjectMaintainer() && disableVizs.contains(id));
    }
 
+//    protected boolean isEnableVizs(ProjectPermission projectPermission, List<Long> enableVizs, Long id) {
+//        return projectPermission != null && (projectPermission.isProjectMaintainer() || enableVizs.contains(id));
+//    }
+
 	protected boolean isDisablePortal(Long portalId, Long projectId, User user, ProjectPermission projectPermission) {
         List<Long> disableVizs = getDisableVizs(user.getId(), projectId, null, VizEnum.PORTAL);
         return isDisableVizs(projectPermission, disableVizs, portalId);
@@ -196,4 +200,97 @@ public class VizCommonService extends BaseEntityService {
         }
         return new ArrayList<>();
     }
+    /**
+     * 获取当前用户被允许的viz
+     * 17231
+     * @param userId
+     * @param featureId
+     * @param allVizs
+     * @param vizEnum
+     * @return
+     */
+//    protected List<Long> getEnableVizs(Long userId, Long featureId, List<Long> allVizs, VizEnum vizEnum) {
+//        List<RoleEnableViz> enables = null;
+//        List<Long> allRoles = null;
+//        switch (vizEnum) {
+//            case PORTAL:
+//                enables = relRolePortalMapper.getEnablePortalByUser(userId, featureId);
+//                if (null == allVizs) {
+//                    List<DashboardPortal> dashboardPortals = dashboardPortalMapper.getByProject(featureId);
+//                    if (!CollectionUtils.isEmpty(dashboardPortals)) {
+//                        allVizs = dashboardPortals.stream().map(DashboardPortal::getId).collect(Collectors.toList());
+//                    }
+//                }
+//                allRoles = roleMapper.getRolesByUserAndProject(userId, featureId);
+//                break;
+//            case DASHBOARD:
+//                enables = relRoleDashboardMapper.getEnableByUser(userId, featureId);
+//                if (null == allVizs) {
+//                    List<Dashboard> dashboardList = dashboardMapper.getByPortalId(featureId);
+//                    if (!CollectionUtils.isEmpty(dashboardList)) {
+//                        allVizs = dashboardList.stream().map(Dashboard::getId).collect(Collectors.toList());
+//                    }
+//                }
+//                allRoles = roleMapper.getRolesByUserAndPortal(userId, featureId);
+//                break;
+//            case DISPLAY:
+//                enables = relRoleDisplayMapper.getEnableDisplayByUser(userId, featureId);
+//                if (null == allVizs) {
+//                    List<Display> displayList = displayMapper.getByProject(featureId);
+//                    if (!CollectionUtils.isEmpty(displayList)) {
+//                        allVizs = displayList.stream().map(Display::getId).collect(Collectors.toList());
+//                    }
+//                }
+//                allRoles = roleMapper.getRolesByUserAndProject(userId, featureId);
+//                break;
+//            case SLIDE:
+//                enables = relRoleSlideMapper.getEnableSlides(userId, featureId);
+//                if (null == allVizs) {
+//                    List<DisplaySlide> slideList = displaySlideMapper.selectByDisplayId(featureId);
+//                    if (!CollectionUtils.isEmpty(slideList)) {
+//                        allVizs = slideList.stream().map(DisplaySlide::getId).collect(Collectors.toList());
+//                    }
+//                }
+//                allRoles = roleMapper.getRolesByUserAndDisplay(userId, featureId);
+//                break;
+//            default:
+//                throw new IllegalArgumentException("Unknown viz type");
+//        }
+//
+//        if (!CollectionUtils.isEmpty(enables) && !CollectionUtils.isEmpty(allVizs)) {
+//            Map<Long, List<RoleEnableViz>> map = enables.stream().collect(Collectors.groupingBy(RoleEnableViz::getRoleId));
+//
+//            if (!CollectionUtils.isEmpty(allRoles)) {
+//                allRoles.forEach(r -> {
+//                    if (!map.containsKey(r)) {
+//                        map.put(r, null);
+//                    }
+//                });
+//            }
+//
+//            if (map.size() == 1) {
+//                List<Long> list = new ArrayList<>();
+//                map.forEach((k, v) -> {
+//                    if (!CollectionUtils.isEmpty(v)) {
+//                        list.addAll(v.stream().map(RoleEnableViz::getVizId).collect(Collectors.toSet()));
+//                    }
+//                });
+//                return list;
+//            } else {
+//                Set<Long> visibleSet = new HashSet<>();
+//                List<Long> finalAllVizs = allVizs;
+//                map.forEach((k, v) -> {
+//                    if (!CollectionUtils.isEmpty(v)) {
+//                        Set<Long> roleEnables = v.stream().map(RoleEnableViz::getVizId).collect(Collectors.toSet());
+//                        visibleSet.addAll(finalAllVizs.stream().filter(l -> !roleEnables.contains(l)).collect(Collectors.toSet()));
+//                    } else {
+//                        visibleSet.addAll(finalAllVizs);
+//                    }
+//                });
+//                allVizs.removeAll(visibleSet);
+//                return allVizs;
+//            }
+//        }
+//        return new ArrayList<>();
+//    }
 }

@@ -735,16 +735,17 @@ public class DashboardServiceImpl extends VizCommonService implements DashboardS
 
         projectService.getProjectDetail(dashboard.getProject().getId(), user, true);
 
+//        17231
         if (vizVisibility.isVisible()) {
+            RelRoleDashboard relRoleDashboard = new RelRoleDashboard(dashboard.getId(), role.getId()).createdBy(user.getId());
+            relRoleDashboardMapper.insert(relRoleDashboard);
+            optLogger.info("Dashboard({}) can be accessed by role({}), update by user({})", (Dashboard) dashboard, role, user.getId());
+        } else {
             if (relRoleDashboardMapper.delete(dashboard.getId(), role.getId()) > 0) {
-                optLogger.info("Dashboard({}) can be accessed by role({}), update by user({})", (Dashboard) dashboard, role, user.getId());
+                optLogger.info("Dashboard({}) limit role({}) access, create by user({})", (Dashboard) dashboard, role, user.getId());
             } else {
                 return false;
             }
-        } else {
-            RelRoleDashboard relRoleDashboard = new RelRoleDashboard(dashboard.getId(), role.getId()).createdBy(user.getId());
-            relRoleDashboardMapper.insert(relRoleDashboard);
-            optLogger.info("Dashboard({}) limit role({}) access, create by user({})", (Dashboard) dashboard, role, user.getId());
         }
 
         return true;

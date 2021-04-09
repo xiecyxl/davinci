@@ -29,8 +29,8 @@ public class RelRoleDashboard extends RecordInfo<RelRoleDashboard> {
     private Long roleId;
 
     private Long dashboardId;
-
-    private Boolean visible = false; // 可见/不可见  true/false
+//17231
+    private Boolean visible = true; // 可见/不可见  true/false
 
     public RelRoleDashboard(Long dashboardId, Long roleId) {
         this.dashboardId = dashboardId;

@@ -140,7 +140,7 @@ public class Consts {
     /**
      * 邮箱格式
      */
-    public static final String REG_EMAIL_FORMAT = "^[\\w!#$%&'*+/=?^_`{|}~-]+(?:\\.[\\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\\w](?:[\\w-]*[\\w])?\\.)+[\\w](?:[\\w-]*[\\w])?$";
+    public static final String REG_EMAIL_FORMAT = "^[a-z_0-9.-]{1,64}@([a-z0-9-]{1,200}.){1,5}[a-z]{1,6}$";
     public static final Pattern PATTERN_EMAIL_FORMAT = Pattern.compile(Consts.REG_EMAIL_FORMAT);
 
 

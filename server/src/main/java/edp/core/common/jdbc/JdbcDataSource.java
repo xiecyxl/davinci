@@ -159,6 +159,18 @@ public class JdbcDataSource {
     @Value("${source.filters}")
     @Getter
     protected String filters;
+//以下三个参数改为可配置 AlbertXie
+    @Value("${source.remove-abandoned}")
+    @Getter
+    protected boolean removeAbandoned;
+
+    @Value("${source.remove-abandoned-timeout}")
+    @Getter
+    protected int removeAbandonedTimeout;
+
+    @Value("${source.log-abandoned}")
+    @Getter
+    protected boolean logAbandoned;
 
     private static volatile Map<String, DruidDataSource> dataSourceMap = new ConcurrentHashMap<>();
     private static volatile Map<String, Lock> dataSourceLockMap = new ConcurrentHashMap<>();
@@ -295,9 +307,10 @@ public class JdbcDataSource {
             druidDataSource.setKeepAlive(keepAlive);
             druidDataSource.setValidationQueryTimeout(validationQueryTimeout);
             druidDataSource.setValidationQuery(validationQuery);
-            druidDataSource.setRemoveAbandoned(true);
-            druidDataSource.setRemoveAbandonedTimeout(3600 + 5 * 60);
-            druidDataSource.setLogAbandoned(true);
+            //以下三个参数改为可配置 AlbertXie
+            druidDataSource.setRemoveAbandoned(removeAbandoned);
+            druidDataSource.setRemoveAbandonedTimeout(removeAbandonedTimeout);
+            druidDataSource.setLogAbandoned(logAbandoned);
 
             // default validation query
             String driverName = druidDataSource.getDriverClassName();

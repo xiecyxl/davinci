@@ -598,10 +598,10 @@ public class WidgetServiceImpl extends BaseEntityService implements WidgetServic
         if (widget.getCreateBy().equals(user.getId())){
             return UserPermissionEnum.DELETE.getPermission();
         }
-        Short premission = widgetMapper.getPermissionByIdAndUserId(id,user.getId());
-        if (null==premission){
-            return UserPermissionEnum.HIDDEN.getPermission();
+        Short permission = widgetMapper.getPermissionByIdAndUserId(id,user.getId());
+        if (null==permission){
+            return UserPermissionEnum.DELETE.getPermission();
         }
-        return premission;
+        return permission;
     }
 }

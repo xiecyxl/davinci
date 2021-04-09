@@ -267,14 +267,16 @@ public class DashboardPortalServiceImpl extends VizCommonService implements Dash
 
         projectService.getProjectDetail(portal.getProjectId(), user, true);
 
+//		17231 权限改造
         if (vizVisibility.isVisible()) {
-            if (relRolePortalMapper.delete(portal.getId(), role.getId()) > 0) {
-                optLogger.info("DashboardPortal({}) can be accessed by role({}), update by user({})", portal, role, user.getId());
-            }
+			RelRolePortal relRolePortal = new RelRolePortal(portal.getId(), role.getId()).createdBy(user.getId());
+			relRolePortalMapper.insert(relRolePortal);
+			optLogger.info("DashboardPortal({}) can be accessed by role({}), update by user({})", portal, role, user.getId());
+
         } else {
-            RelRolePortal relRolePortal = new RelRolePortal(portal.getId(), role.getId()).createdBy(user.getId());
-            relRolePortalMapper.insert(relRolePortal);
-            optLogger.info("DashboardPortal({}) limit role({}) access, create by user({})", portal, role, user.getId());
+			if (relRolePortalMapper.delete(portal.getId(), role.getId()) > 0) {
+				optLogger.info("DashboardPortal({}) limit role({}) access, create by user({})", portal, role, user.getId());
+			}
         }
 
         return true;
