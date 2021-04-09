@@ -24,10 +24,12 @@ import edp.davinci.model.RelRoleDashboard;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Set;
 
+@Component
 public interface RelRoleDashboardMapper {
 
     int insert(RelRoleDashboard relRoleDashboard);
@@ -52,7 +54,6 @@ public interface RelRoleDashboardMapper {
             " WHERE rd.role_id IS NULL "
     })
     List<RoleDisableViz> getDisableByUser(@Param("userId") Long userId, @Param("portalId") Long portalId);
-
 
     @Select("select role_id from rel_role_dashboard where dashboard_id = #{dashboardId} and visible = 0")
     List<Long> getExcludeRoles(@Param("dashboardId") Long dashboardId);
@@ -101,5 +102,5 @@ public interface RelRoleDashboardMapper {
         "select d.id from dashboard d left join dashboard_portal p on p.id = d.dashboard_portal_id ",
         "where p.project_id = #{projectId})"
     })
-    int deleteByRoleAndProject(Long roleId, Long projectId);
+    int deleteByRoleAndProject(@Param("roleId") Long roleId, @Param("projectId") Long projectId);
 }

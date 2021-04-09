@@ -24,9 +24,11 @@ import edp.davinci.model.RelRolePortal;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public interface RelRolePortalMapper {
 
     int insert(RelRolePortal record);
@@ -94,5 +96,5 @@ public interface RelRolePortalMapper {
     int deleteByProject(Long projectId);
 
     @Delete({"delete from rel_role_portal where role_id = #{roleId} and portal_id in (select id from dashboard_portal where project_id = #{projectId})"})
-    int deleteByRoleAndProject(Long roleId, Long projectId);
+    int deleteByRoleAndProject(@Param("roleId") Long roleId, @Param("projectId") Long projectId);
 }

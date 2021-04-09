@@ -397,16 +397,15 @@ public class DisplayServiceImpl extends VizCommonService implements DisplayServi
         if (null == display) {
             throw new NotFoundException("Display is not found");
         }
-
+//17231
         if (vizVisibility.isVisible()) {
-            if (relRoleDisplayMapper.delete(display.getId(), role.getId()) > 0) {
-                optLogger.info("Display({}) can be accessed by role({}), update by user({})", display, role,
-                        user.getId());
-            }
-        } else {
             RelRoleDisplay relRoleDisplay = new RelRoleDisplay(display.getId(), role.getId());
             relRoleDisplayMapper.insert(relRoleDisplay);
-            optLogger.info("Display({}) limit role({}) access, create by user({})", display, role, user.getId());
+            optLogger.info("Display({}) can be accessed by role({}), update by user({})", display, role, user.getId());
+        } else {
+            if (relRoleDisplayMapper.delete(display.getId(), role.getId()) > 0) {
+                optLogger.info("Display({}) limit role({}) access, create by user({})", display, role, user.getId());
+            }
         }
 
         return true;

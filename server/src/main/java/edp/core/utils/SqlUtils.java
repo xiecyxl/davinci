@@ -138,8 +138,6 @@ public class SqlUtils {
     }
 
     public void execute(String sql) throws ServerException {
-        sql = filterAnnotate(sql);
-        checkSensitiveSql(sql);
         if (isQueryLogEnable) {
             String md5 = MD5Util.getMD5(sql, true, 16);
             sqlLogger.info("{} execute for sql:{}", md5, formatSql(sql));
@@ -170,8 +168,6 @@ public class SqlUtils {
     }
 
     public List<Map<String, Object>> query4List(String sql, int limit) {
-        sql = filterAnnotate(sql);
-        checkSensitiveSql(sql);
         JdbcTemplate jdbcTemplate = jdbcTemplate();
         jdbcTemplate.setMaxRows(limit > resultLimit ? resultLimit : limit > 0 ? limit : resultLimit);
 
@@ -188,9 +184,8 @@ public class SqlUtils {
     }
 
     public PaginateWithQueryColumns query4Paginate(String sql, int pageNo, int pageSize, int totalCount, int limit, Set<String> excludeColumns) {
+
         PaginateWithQueryColumns paginateWithQueryColumns = new PaginateWithQueryColumns();
-        sql = filterAnnotate(sql);
-        checkSensitiveSql(sql);
 
         long before = System.currentTimeMillis();
 
@@ -396,21 +391,21 @@ public class SqlUtils {
         }
     }
 
-    public static String getColumnLabel(Set<String> columnPrefixs, String columnLable) {
-        if (!CollectionUtils.isEmpty(columnPrefixs)) {
-            for (String prefix : columnPrefixs) {
-                if (columnLable.startsWith(prefix)) {
-                    return columnLable.replaceFirst(prefix, EMPTY);
+    public static String getColumnLabel(Set<String> columnPrefixes, String columnLabel) {
+        if (!CollectionUtils.isEmpty(columnPrefixes)) {
+            for (String prefix : columnPrefixes) {
+                if (columnLabel.startsWith(prefix)) {
+                    return columnLabel.replaceFirst(prefix, EMPTY);
                 }
-                if (columnLable.startsWith(prefix.toLowerCase())) {
-                    return columnLable.replaceFirst(prefix.toLowerCase(), EMPTY);
+                if (columnLabel.startsWith(prefix.toLowerCase())) {
+                    return columnLabel.replaceFirst(prefix.toLowerCase(), EMPTY);
                 }
-                if (columnLable.startsWith(prefix.toUpperCase())) {
-                    return columnLable.replaceFirst(prefix.toUpperCase(), EMPTY);
+                if (columnLabel.startsWith(prefix.toUpperCase())) {
+                    return columnLabel.replaceFirst(prefix.toUpperCase(), EMPTY);
                 }
             }
         }
-        return columnLable;
+        return columnLabel;
     }
 
     /**
@@ -905,18 +900,6 @@ public class SqlUtils {
         }
 
         return sqlTempDelimiter;
-    }
-
-    /**
-     * 过滤sql中的注释
-     *
-     * @param sql
-     * @return
-     */
-    public static String filterAnnotate(String sql) {
-        // sql = PATTERN_SQL_ANNOTATE.matcher(sql).replaceAll("$1");
-        sql = sql.replaceAll(NEW_LINE_CHAR, SPACE).replaceAll("(;+\\s*)+", SEMICOLON);
-        return sql;
     }
 
     public static String formatSqlType(String type) throws ServerException {

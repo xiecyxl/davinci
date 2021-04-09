@@ -4,6 +4,7 @@ import chartlibs from '../../config/chart'
 import echarts from 'echarts/lib/echarts'
 import { ECharts } from 'echarts'
 import chartOptionGenerator from '../../render/chart'
+import 'echarts/extension/bmap/bmap'
 const styles = require('./Chart.less')
 
 interface IChartStates {
